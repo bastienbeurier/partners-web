@@ -1,0 +1,1 @@
+FLASK_APP=partners-web.py
