@@ -1,25 +1,11 @@
-from app import app
+from flask import jsonify, request
 from app import db
-from app.auth import basic_auth, token_auth
-from app.errors import bad_request
 from app.models import User
-from flask import jsonify
-from flask import request
+from app.api import bp
+from app.api.auth import token_auth
+from app.api.errors import bad_request
 
-@app.route('/users/<int:id>', methods=['GET'])
-@token_auth.login_required
-def get_user(id):
-    return jsonify(User.query.get_or_404(id).to_dict())
-
-@app.route('/users/<int:id>/partners', methods=['GET'])
-@token_auth.login_required
-def get_partners(id):
-	pass
-    # user = User.query.get_or_404(id)
-    # data = User.to_collection_dict(user.followers)
-    # return jsonify(data)
-
-@app.route('/users', methods=['POST'])
+@bp.route('/users', methods=['POST'])
 def create_user():
     data = request.get_json() or {}
     if 'username' not in data or 'email' not in data or 'password' not in data:

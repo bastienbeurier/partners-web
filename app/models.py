@@ -1,7 +1,7 @@
 from app import db
 import base64
 from datetime import datetime, timedelta
-from flask import url_for
+from flask import current_app, url_for
 import os
 from werkzeug.security import generate_password_hash, check_password_hash
 
@@ -88,11 +88,27 @@ class User(db.Model):
 
 class Task(db.Model):
     id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     category = db.Column(db.String(64))
     comment = db.Column(db.String(140))
     duration = db.Column(db.Integer)
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 
     def __repr__(self):
         return '<Task {}>'.format(self.category)
+
+    def to_dict(self):
+        data = {
+            'id': self.id,
+            'user_id': self.user_id,
+            'category': self.category,
+            'comment': self.comment,
+            'duration': self.duration,
+            'timestamp': self.timestamp
+        }
+        return data
+
+    def from_dict(self, data):
+        for field in ['user_id', 'category', 'comment', 'duration']:
+            if field in data:
+                setattr(self, field, data[field])

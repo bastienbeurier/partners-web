@@ -1,16 +1,16 @@
 from flask import jsonify, g
-from app import app
 from app import db
-from app.auth import basic_auth, token_auth
+from app.api import bp
+from app.api.auth import basic_auth, token_auth
 
-@app.route('/tokens', methods=['POST'])
+@bp.route('/tokens', methods=['POST'])
 @basic_auth.login_required
 def get_token():
     token = g.current_user.get_token()
     db.session.commit()
     return jsonify({'token': token})
 
-@app.route('/tokens', methods=['DELETE'])
+@bp.route('/tokens', methods=['DELETE'])
 @token_auth.login_required
 def revoke_token():
     g.current_user.revoke_token()
