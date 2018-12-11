@@ -21,3 +21,4 @@ def create_user():
     response = jsonify(user.to_dict())
     response.status_code = 201
     return response
+    

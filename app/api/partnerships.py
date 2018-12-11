@@ -1,4 +1,4 @@
-from flask import jsonify, request
+from flask import jsonify, request, g
 from app import db
 from app.models import User
 from app.api import bp
@@ -9,6 +9,7 @@ from app.api.errors import bad_request
 @token_auth.login_required
 def create_partnership(username):
     user = User.query.filter_by(username=username).first()
+    current_user = g.current_user
     if user is None:
         return bad_request('cannot find the user to create a partnership with')
     if user == current_user:
@@ -24,6 +25,7 @@ def create_partnership(username):
 @token_auth.login_required
 def delete_partnership(username):
     user = User.query.filter_by(username=username).first()
+    current_user = g.current_user
     if user is None:
         return bad_request('cannot find the partner')
     if user == current_user:
@@ -35,7 +37,7 @@ def delete_partnership(username):
     db.session.commit()
     return '', 201
 
-@app.route('/partnerships/<int:id>', methods=['GET'])
+@bp.route('/partnerships/<int:id>', methods=['GET'])
 @token_auth.login_required
 def get_partners(id):
     user = User.query.get_or_404(id)
