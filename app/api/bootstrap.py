@@ -1,9 +1,7 @@
-from flask import jsonify, request, g
-from app import db
-from app.models import User
+from flask import jsonify, g
 from app.api import bp
 from app.api.auth import token_auth
-from app.api.errors import bad_request
+
 
 @bp.route('/bootstrap', methods=['GET'])
 @token_auth.login_required

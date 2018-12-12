@@ -4,6 +4,7 @@ from app.models import User
 from app.api import bp
 from app.api.errors import bad_request
 
+
 @bp.route('/users', methods=['POST'])
 def create_user():
     data = request.get_json() or {}

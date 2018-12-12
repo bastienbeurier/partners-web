@@ -6,9 +6,10 @@ from sqlalchemy import and_
 from werkzeug.security import generate_password_hash, check_password_hash
 
 partnerships = db.Table('partnerships',
-    db.Column('partner_a_id', db.Integer, db.ForeignKey('user.id')),
-    db.Column('partner_b_id', db.Integer, db.ForeignKey('user.id'))
-)
+                        db.Column('partner_a_id', db.Integer, db.ForeignKey('user.id')),
+                        db.Column('partner_b_id', db.Integer, db.ForeignKey('user.id'))
+                        )
+
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -117,10 +118,10 @@ class User(db.Model):
         return None
 
     def tasks(self, before, after):
-    	return Task.query.filter(and_(
-            		Task.user_id == self.id, 
-            		Task.timestamp >= after, 
-            		Task.timestamp <= before))
+        return Task.query.filter(and_(
+            Task.user_id == self.id,
+            Task.timestamp >= after,
+            Task.timestamp <= before))
 
     def category_summaries(self, before, after):
         category_summaries = {}
@@ -133,29 +134,31 @@ class User(db.Model):
             print(partner_tasks.count())
 
             for task in partner_tasks:
-                if not category_summaries.get(task.category):       
+                if not category_summaries.get(task.category):
                     category_summaries[task.category] = {
                         'category': task.category,
                         'total_task_count': 1,
                         'total_task_duration': task.duration,
                         'partner_task_counts': [(1 if j == i else 0) for j in range(0, len(all_partners))],
-                        'partner_task_durations': [(task.duration if j == i else 0) for j in range(0, len(all_partners))]
+                        'partner_task_durations': [(task.duration if j == i else 0) for j in
+                                                   range(0, len(all_partners))]
                     }
                 else:
                     category_summaries[task.category]['total_task_count'] += 1
                     category_summaries[task.category]['total_task_duration'] += task.duration
-                    category_summaries[task.category]['partner_task_counts'][i] += 1 
+                    category_summaries[task.category]['partner_task_counts'][i] += 1
                     category_summaries[task.category]['partner_task_durations'][i] += task.duration
                     print(category_summaries[task.category]['total_task_duration'])
 
         partner_usernames = [partner.username for partner in all_partners]
         category_summaries_list = [x[1] for x in category_summaries.items()]
-        category_summaries_list.sort(key=lambda k: k['total_task_duration'], reverse = True) 
+        category_summaries_list.sort(key=lambda k: k['total_task_duration'], reverse=True)
 
         return {
             'partners': partner_usernames,
             'category_summaries': category_summaries_list
-        }   
+        }
+
 
 class Task(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -184,6 +187,7 @@ class Task(db.Model):
             if field in data:
                 setattr(self, field, data[field])
 
+
 class Invitation(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     sender_id = db.Column(db.Integer, db.ForeignKey('user.id'), index=True)
@@ -205,4 +209,3 @@ class Invitation(db.Model):
             'receiver_username': self.receiver_username
         }
         return data
-

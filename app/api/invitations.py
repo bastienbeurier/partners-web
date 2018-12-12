@@ -5,6 +5,7 @@ from app.api import bp
 from app.api.auth import token_auth
 from app.api.errors import bad_request
 
+
 @bp.route('/invitations/<username>', methods=['POST'])
 @token_auth.login_required
 def create_invitation(username):
@@ -33,6 +34,7 @@ def create_invitation(username):
     db.session.commit()
     return '', 201
 
+
 @bp.route('/sent_invitations/<username>', methods=['DELETE'])
 @token_auth.login_required
 def delete_sent_invitation(username):
@@ -46,6 +48,7 @@ def delete_sent_invitation(username):
     current_user.uninvite_user(user)
     db.session.commit()
     return '', 201
+
 
 @bp.route('/received_invitations/<username>', methods=['DELETE'])
 @token_auth.login_required

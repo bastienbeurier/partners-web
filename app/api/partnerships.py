@@ -5,6 +5,7 @@ from app.api import bp
 from app.api.auth import token_auth
 from app.api.errors import bad_request
 
+
 @bp.route('/partnerships/<username>', methods=['POST'])
 @token_auth.login_required
 def create_partnership(username):
@@ -21,10 +22,10 @@ def create_partnership(username):
     if user.partners.count():
         return bad_request('User already has a partner.')
 
-
     current_user.make_partner(user)
     db.session.commit()
     return '', 201
+
 
 @bp.route('/partnerships/<username>', methods=['DELETE'])
 @token_auth.login_required
@@ -39,6 +40,7 @@ def delete_partnership(username):
     current_user.unmake_partner(user)
     db.session.commit()
     return '', 201
+
 
 @bp.route('/partnerships/<int:id>', methods=['GET'])
 @token_auth.login_required

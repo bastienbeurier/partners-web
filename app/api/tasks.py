@@ -6,6 +6,7 @@ from app.api.auth import token_auth
 from app.api.errors import bad_request
 from datetime import datetime
 
+
 @bp.route('/tasks', methods=['POST'])
 @token_auth.login_required
 def create_task():
@@ -20,11 +21,12 @@ def create_task():
     response.status_code = 201
     return response
 
+
 @bp.route('/tasks', methods=['GET'])
 @token_auth.login_required
 def get_task():
-    before = request.args.get('before', default = None, type = toDate)
-    after = request.args.get('after', default = None, type = toDate)
+    before = request.args.get('before', default=None, type=to_date)
+    after = request.args.get('after', default=None, type=to_date)
 
     if not before or not after:
         return bad_request('Request must include valid before and after date parameters.')
@@ -33,6 +35,6 @@ def get_task():
     response.status_code = 200
     return response
 
-def toDate(dateString): 
-    return datetime.strptime(dateString, "%Y-%m-%d-%H-%M")
 
+def to_date(dateString):
+    return datetime.strptime(dateString, "%Y-%m-%d-%H-%M")
