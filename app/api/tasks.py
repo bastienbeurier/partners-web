@@ -11,7 +11,7 @@ from datetime import datetime
 def create_task():
     data = request.get_json() or {}
     if 'category' not in data or 'duration' not in data:
-        return bad_request('must include category and duration fields')
+        return bad_request('Task must include category and duration fields.')
     task = Task(user_id=g.current_user.id)
     task.from_dict(data)
     db.session.add(task)
@@ -27,7 +27,7 @@ def get_task():
     after = request.args.get('after', default = None, type = toDate)
 
     if not before or not after:
-        return bad_request('must include valid before and after date parameters')
+        return bad_request('Request must include valid before and after date parameters.')
 
     response = jsonify(g.current_user.category_summaries(before, after))
     response.status_code = 200

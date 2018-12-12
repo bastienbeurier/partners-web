@@ -75,21 +75,29 @@ class User(db.Model):
         return user
 
     def make_partner(self, user):
-        if not self.is_partner(user):
+        if self.partners.count() == user.partners.count() == 0:
+            self.received_invitations.remove_all()
+            self.sent_invitations.remove_all()
+            user.received_invitations.remove_all()
+            user.sent_invitations.remove_all()
             self.partners.append(user)
+            user.partners.append(self)
 
     def unmake_partner(self, user):
         if self.is_partner(user):
-            self.partners.remove(user)
+            user.partners.remove_all()
+            self.partners.remove_all()
 
     def is_partner(self, user):
-        return self.partners.filter(
-            partnerships.c.partner_b_id == user.id).count() > 0
+        return self.partners.filter(partnerships.c.partner_b_id == user.id).count() == \
+               user.partners.filter(partnerships.c.partner_b_id == self.id).count() == 1
 
     def invite_user(self, user):
-        if not self.get_sent_invitation(user):
-            invitation = Invitation(sender_id=self.id, receiver_id=user.id)
-            db.session.add(invitation)
+        invitation = Invitation(sender_id=self.id,
+                                receiver_id=user.id,
+                                sender_username=self.username,
+                                receiver_username=user.username)
+        db.session.add(invitation)
 
     def uninvite_user(self, user):
         invitation = self.get_sent_invitation(user)
@@ -99,6 +107,12 @@ class User(db.Model):
     def get_sent_invitation(self, user):
         for invitation in self.sent_invitations:
             if invitation.receiver_id == user.id:
+                return invitation
+        return None
+
+    def get_received_invitation(self, user):
+        for invitation in self.received_invitations:
+            if invitation.sender_id == user.id:
                 return invitation
         return None
 
@@ -176,6 +190,8 @@ class Invitation(db.Model):
     receiver_id = db.Column(db.Integer, db.ForeignKey('user.id'), index=True)
     sender = db.relationship('User', foreign_keys=[sender_id], backref='sent_invitations', lazy='dynamic')
     receiver = db.relationship('User', foreign_keys=[receiver_id], backref='received_invitations', lazy='dynamic')
+    sender_username = db.Column(db.String(64))
+    receiver_username = db.Column(db.String(64))
 
     def __repr__(self):
         return '<Invitation {}>'.format(self.id)
@@ -184,7 +200,9 @@ class Invitation(db.Model):
         data = {
             'id': self.id,
             'sender_id': self.sender_id,
-            'receiver_id': self.receiver_id
+            'receiver_id': self.receiver_id,
+            'sender_username': self.sender_username,
+            'receiver_username': self.receiver_username
         }
         return data
 

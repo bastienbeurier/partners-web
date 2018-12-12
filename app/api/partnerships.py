@@ -11,13 +11,18 @@ def create_partnership(username):
     user = User.query.filter_by(username=username).first()
     current_user = g.current_user
     if user is None:
-        return bad_request('cannot find the user to create a partnership with')
+        return bad_request('Cannot find the user you want to partner with.')
     if user == current_user:
-        return bad_request('cannot create a partnership with yourself')
+        return bad_request('Cannot create a partnership with yourself.')
     if user.is_partner(current_user):
-        return bad_request('users are already partners')
+        return bad_request('You are already partners.')
+    if current_user.partners.count():
+        return bad_request('You already have a partner.')
+    if user.partners.count():
+        return bad_request('User already has a partner.')
+
+
     current_user.make_partner(user)
-    user.make_partner(current_user)
     db.session.commit()
     return '', 201
 
@@ -27,13 +32,11 @@ def delete_partnership(username):
     user = User.query.filter_by(username=username).first()
     current_user = g.current_user
     if user is None:
-        return bad_request('cannot find the partner')
-    if user == current_user:
-        return bad_request('cannot unmake partnership with yourself')
+        return bad_request('Cannot find the requested partner.')
     if not user.is_partner(current_user):
-        return bad_request('users are not partners')
+        return bad_request('You are not partners with this user.')
+
     current_user.unmake_partner(user)
-    user.unmake_partner(current_user)
     db.session.commit()
     return '', 201
 
