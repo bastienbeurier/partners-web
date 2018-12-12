@@ -2,7 +2,6 @@ from flask import jsonify, request
 from app import db
 from app.models import User
 from app.api import bp
-from app.api.auth import token_auth
 from app.api.errors import bad_request
 
 @bp.route('/users', methods=['POST'])
