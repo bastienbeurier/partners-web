@@ -1,4 +1,4 @@
-from flask import jsonify, request, g
+from flask import jsonify, g
 from app import db
 from app.models import User
 from app.api import bp

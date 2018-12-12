@@ -1,7 +1,6 @@
 from app import db
 import base64
 from datetime import datetime, timedelta
-from flask import current_app, url_for
 import os
 from sqlalchemy import and_
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -87,6 +86,22 @@ class User(db.Model):
         return self.partners.filter(
             partnerships.c.partner_b_id == user.id).count() > 0
 
+    def invite_user(self, user):
+        if not self.get_sent_invitation(user):
+            invitation = Invitation(sender_id=self.id, receiver_id=user.id)
+            db.session.add(invitation)
+
+    def uninvite_user(self, user):
+        invitation = self.get_sent_invitation(user)
+        if invitation:
+            db.session.remove(invitation)
+
+    def get_sent_invitation(self, user):
+        for invitation in self.sent_invitations:
+            if invitation.receiver_id == user.id:
+                return invitation
+        return None
+
     def tasks(self, before, after):
     	return Task.query.filter(and_(
             		Task.user_id == self.id, 
@@ -154,4 +169,22 @@ class Task(db.Model):
         for field in ['user_id', 'category', 'comment', 'duration']:
             if field in data:
                 setattr(self, field, data[field])
+
+class Invitation(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    sender_id = db.Column(db.Integer, db.ForeignKey('user.id'), index=True)
+    receiver_id = db.Column(db.Integer, db.ForeignKey('user.id'), index=True)
+    sender = db.relationship('User', foreign_keys=[sender_id], backref='sent_invitations', lazy='dynamic')
+    receiver = db.relationship('User', foreign_keys=[receiver_id], backref='received_invitations', lazy='dynamic')
+
+    def __repr__(self):
+        return '<Invitation {}>'.format(self.id)
+
+    def to_dict(self):
+        data = {
+            'id': self.id,
+            'sender_id': self.sender_id,
+            'receiver_id': self.receiver_id
+        }
+        return data
 
