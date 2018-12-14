@@ -192,8 +192,8 @@ class Invitation(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     sender_id = db.Column(db.Integer, db.ForeignKey('user.id'), index=True)
     receiver_id = db.Column(db.Integer, db.ForeignKey('user.id'), index=True)
-    sender = db.relationship('User', foreign_keys=[sender_id], backref='sent_invitations', lazy='dynamic')
-    receiver = db.relationship('User', foreign_keys=[receiver_id], backref='received_invitations', lazy='dynamic')
+    sender = db.relationship('User', foreign_keys=[sender_id], backref='sent_invitations')
+    receiver = db.relationship('User', foreign_keys=[receiver_id], backref='received_invitations')
     sender_username = db.Column(db.String(64))
     receiver_username = db.Column(db.String(64))
 
