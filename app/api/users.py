@@ -10,11 +10,11 @@ def create_user():
     data = request.get_json() or {}
 
     if 'username' not in data or 'email' not in data or 'password' not in data:
-        return bad_request('Request must include username, email and password fields.')
+        return bad_request('Signup request must include username, email and password.')
     if User.query.filter_by(username=data['username']).first():
-        return bad_request('Please use a different username, this one is already taken.')
+        return bad_request('Username is already taken.')
     if User.query.filter_by(email=data['email']).first():
-        return bad_request('Please use a different email address, this one is already taken.')
+        return bad_request('Email is already taken.')
 
     user = User()
     user.from_dict(data, new_user=True)
