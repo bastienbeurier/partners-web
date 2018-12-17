@@ -23,3 +23,9 @@ def create_user():
     response = jsonify(user.to_dict())
     response.status_code = 201
     return response
+
+@bp.route('/', methods=['GET'])
+def index():
+    response = jsonify({"message": "success"})
+    response.status_code = 200
+    return response
