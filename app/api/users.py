@@ -8,11 +8,6 @@ from app.api.errors import bad_request
 @bp.route('/users', methods=['POST'])
 def create_user():
     data = request.get_json() or {}
-
-    print("username: " + data['username'])
-    print("email: " + data['email'])
-    print("password: " + data['password'])
-
     if 'username' not in data or 'email' not in data or 'password' not in data:
         return bad_request('Signup request must include username, email and password.')
     if User.query.filter_by(username=data['username']).first():
