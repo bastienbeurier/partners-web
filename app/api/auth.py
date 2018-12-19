@@ -24,7 +24,8 @@ def basic_auth_error():
 
 @token_auth.verify_token
 def verify_token(token):
-    g.current_user = User.check_token(token) if token else None
+    user = User.query.filter_by(token=token).first()
+    g.current_user = user
     return g.current_user is not None
 
 
