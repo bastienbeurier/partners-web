@@ -17,6 +17,4 @@ def get_token():
 def revoke_token():
     g.current_user.revoke_token()
     db.session.commit()
-    response = jsonify({'message': 'success'})
-    response.status_code = 204
-    return response
+    return '', 204
