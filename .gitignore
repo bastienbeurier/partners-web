@@ -39,3 +39,4 @@ common-http-requests.txt
 venv
 app.db
 partners-web.log*
+.idea
