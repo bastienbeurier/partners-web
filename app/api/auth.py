@@ -19,7 +19,7 @@ def verify_password(email, password):
 
 @basic_auth.error_handler
 def basic_auth_error():
-    return error_response(401, "Wrong credentials.")
+    return error_response(400, "Wrong credentials.")
 
 
 @token_auth.verify_token
