@@ -77,17 +77,17 @@ class User(db.Model):
 
     def make_partner(self, user):
         if self.partners.count() == user.partners.count() == 0:
-            self.received_invitations.remove_all()
-            self.sent_invitations.remove_all()
-            user.received_invitations.remove_all()
-            user.sent_invitations.remove_all()
+            self.received_invitations.delete()
+            self.sent_invitations.delete()
+            user.received_invitations.delete()
+            user.sent_invitations.delete()
             self.partners.append(user)
             user.partners.append(self)
 
     def unmake_partner(self, user):
         if self.is_partner(user):
-            user.partners.remove_all()
-            self.partners.remove_all()
+            user.partners.delete()
+            self.partners.delete()
 
     def is_partner(self, user):
         return self.partners.filter(partnerships.c.partner_b_id == user.id).count() == \
@@ -103,7 +103,7 @@ class User(db.Model):
     def uninvite_user(self, user):
         invitation = self.get_sent_invitation(user)
         if invitation:
-            db.session.remove(invitation)
+            db.session.delete(invitation)
 
     def get_sent_invitation(self, user):
         for invitation in self.sent_invitations:
