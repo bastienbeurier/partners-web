@@ -28,6 +28,10 @@ def get_task():
     before = request.args.get('before', default=None, type=to_date)
     after = request.args.get('after', default=None, type=to_date)
 
+    print("Dates")
+    print(before)
+    print(after)
+
     if not before or not after:
         return bad_request('Request must include valid before and after date parameters.')
 
