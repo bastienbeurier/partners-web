@@ -77,10 +77,10 @@ class User(db.Model):
 
     def make_partner(self, user):
         if self.partners.count() == user.partners.count() == 0:
-            db.session.delete(self.received_invitations)
-            db.session.delete(self.sent_invitations)
-            db.session.delete(user.received_invitations)
-            db.session.delete(user.sent_invitations)
+            db.session.query(Invitation).filter_by(sender_id=self.id).delete()
+            db.session.query(Invitation).filter_by(receiver_id=self.id).delete()
+            db.session.query(Invitation).filter_by(sender_id=user.id).delete()
+            db.session.query(Invitation).filter_by(receiver_id=user.id).delete()
             self.partners.append(user)
             user.partners.append(self)
 
