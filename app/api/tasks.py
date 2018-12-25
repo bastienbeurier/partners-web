@@ -40,7 +40,7 @@ def get_task():
 def get_category_tasks():
     before = request.args.get('before', default=None, type=to_date)
     after = request.args.get('after', default=None, type=to_date)
-    category = request.args.get('category', default=None, type=to_date)
+    category = request.args.get('category', default=None)
 
     if not before or not after:
         return bad_request('Request must include valid before and after date parameters.')
