@@ -28,14 +28,27 @@ def get_task():
     before = request.args.get('before', default=None, type=to_date)
     after = request.args.get('after', default=None, type=to_date)
 
-    print("Dates")
-    print(before)
-    print(after)
-
     if not before or not after:
         return bad_request('Request must include valid before and after date parameters.')
 
     response = jsonify(g.current_user.category_summaries(before, after))
+    response.status_code = 200
+    return response
+
+
+@bp.route('/category_tasks', methods=['GET'])
+def get_category_tasks():
+    before = request.args.get('before', default=None, type=to_date)
+    after = request.args.get('after', default=None, type=to_date)
+    category = request.args.get('category', default=None, type=to_date)
+
+    if not before or not after:
+        return bad_request('Request must include valid before and after date parameters.')
+
+    if not category:
+        return bad_request('Request must include the name of the task category.')
+
+    response = jsonify(g.current_user.category_tasks(category, before, after))
     response.status_code = 200
     return response
 

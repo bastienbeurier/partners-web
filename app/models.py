@@ -117,7 +117,7 @@ class User(db.Model):
                 return invitation
         return None
 
-    def tasks(self, before, after):
+    def tasks_between_dates(self, before, after):
         return Task.query.filter(and_(
             Task.user_id == self.id,
             Task.timestamp >= after,
@@ -129,9 +129,7 @@ class User(db.Model):
 
         for i in range(0, len(all_partners)):
             partner = all_partners[i]
-            partner_tasks = partner.tasks(before, after)
-
-            print(partner_tasks.count())
+            partner_tasks = partner.tasks_between_dates(before, after)
 
             for task in partner_tasks:
                 if not category_summaries.get(task.category):
@@ -158,6 +156,19 @@ class User(db.Model):
             'partners': partner_usernames,
             'category_summaries': category_summaries_list
         }
+
+    def category_tasks(self, category, before, after):
+        all_partners = [self] + self.partners.all()
+
+        tasks = []
+        for partner in all_partners:
+            tasks += Task.query.filter(and_(Task.user_id == partner.id,
+                                            Task.timestamp >= after,
+                                            Task.timestamp <= before,
+                                            Task.category == category))
+
+        tasks.sort(key=lambda k: k['timestamp'])
+        return tasks
 
 
 class Task(db.Model):
