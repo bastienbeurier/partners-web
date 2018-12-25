@@ -171,7 +171,7 @@ class User(db.Model):
                                             Task.timestamp <= before,
                                             Task.category == category))
 
-        tasks.sort(key=lambda k: k['timestamp'])
+        tasks.sort(key=lambda k: k.timestamp)
         for task in tasks:
             task['username'] = user_id_to_name[task.user_id]
 
