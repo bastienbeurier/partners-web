@@ -37,6 +37,7 @@ def get_task():
 
 
 @bp.route('/category_tasks', methods=['GET'])
+@token_auth.login_required
 def get_category_tasks():
     before = request.args.get('before', default=None, type=to_date)
     after = request.args.get('after', default=None, type=to_date)
