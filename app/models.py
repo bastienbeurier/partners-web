@@ -172,10 +172,14 @@ class User(db.Model):
                                             Task.category == category))
 
         tasks.sort(key=lambda k: k.timestamp)
-        for task in tasks:
-            task['username'] = user_id_to_name[task.user_id]
 
-        return {'tasks': tasks}
+        task_dicts = []
+        for task in tasks:
+            username = user_id_to_name[task.user_id]
+            task_dict = task.to_dict(username)
+            task_dicts.append(task_dict)
+
+        return {'tasks': task_dicts}
 
 
 class Task(db.Model):
@@ -189,7 +193,7 @@ class Task(db.Model):
     def __repr__(self):
         return '<Task {}>'.format(self.category)
 
-    def to_dict(self):
+    def to_dict(self, username=None):
         data = {
             'id': self.id,
             'user_id': self.user_id,
@@ -198,6 +202,10 @@ class Task(db.Model):
             'duration': self.duration,
             'timestamp': self.timestamp
         }
+
+        if username:
+            data['username'] = username
+
         return data
 
     def from_dict(self, data):
