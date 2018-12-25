@@ -160,6 +160,10 @@ class User(db.Model):
     def category_tasks(self, category, before, after):
         all_partners = [self] + self.partners.all()
 
+        user_id_to_name = {}
+        for partner in all_partners:
+            user_id_to_name[partner.id] = partner.username
+
         tasks = []
         for partner in all_partners:
             tasks += Task.query.filter(and_(Task.user_id == partner.id,
@@ -168,7 +172,10 @@ class User(db.Model):
                                             Task.category == category))
 
         tasks.sort(key=lambda k: k['timestamp'])
-        return tasks
+        for task in tasks:
+            task['username'] = user_id_to_name[task.user_id]
+
+        return {'tasks': tasks}
 
 
 class Task(db.Model):
